@@ -1,0 +1,10 @@
+{
+  "name": "com.raphandco.leman",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suivi de la température et du niveau d'eau du Lac Léman",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18"
+  }
+}

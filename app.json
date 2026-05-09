@@ -1,0 +1,92 @@
+{
+  "id": "com.raphandco.leman",
+  "version": "1.1.2",
+  "sdk": 3,
+  "compatibility": ">=10.0.0",
+  "platforms": [
+    "local"
+  ],
+  "author": {
+    "name": "Gemini CLI",
+    "email": "homey@raphandco.local"
+  },
+  "name": {
+    "en": "Lac Léman Monitor",
+    "fr": "Moniteur du Lac Léman"
+  },
+  "description": {
+    "en": "Track Lake Geneva temperature and water level.",
+    "fr": "Suivi de la température et du niveau d'eau du Lac Léman."
+  },
+  "category": [
+    "energy",
+    "climate"
+  ],
+  "brandColor": "#1565C0",
+  "images": {
+    "small": "/assets/icon.svg",
+    "large": "/assets/icon.svg"
+  },
+  "capabilities": {
+    "measure_water_level": {
+      "type": "number",
+      "title": {
+        "en": "Water Level",
+        "fr": "Niveau d'eau"
+      },
+      "units": "m",
+      "decimals": 2,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/water_level.svg"
+    },
+    "measure_water_level_diff": {
+      "type": "number",
+      "title": {
+        "en": "Diff vs Summer Avg",
+        "fr": "Diff vs Moyenne Été"
+      },
+      "units": "cm",
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/water_level.svg"
+    }
+  },
+  "drivers": [
+    {
+      "id": "leman",
+      "name": {
+        "en": "Lac Léman",
+        "fr": "Lac Léman"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_temperature",
+        "measure_water_level",
+        "measure_water_level_diff"
+      ],
+      "images": {
+        "small": "/assets/icon.svg",
+        "large": "/assets/icon.svg"
+      },
+      "pair": [
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ]
+    }
+  ]
+}
