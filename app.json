@@ -151,16 +151,16 @@
       },
       "class": "sensor",
       "capabilities": [
+        "alarm_pump_foil",
+        "alarm_kite",
+        "alarm_strong_wind",
         "measure_temperature",
         "measure_water_level",
         "measure_water_level_diff",
-        "alarm_kite",
         "measure_wind_max",
         "measure_wind_gust_max",
         "measure_wind_direction",
-        "measure_wind_direction_text",
-        "alarm_strong_wind",
-        "alarm_pump_foil"
+        "measure_wind_direction_text"
       ],
       "images": {
         "small": "/assets/icon.svg",
