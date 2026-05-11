@@ -79,7 +79,7 @@
       "setable": false,
       "insights": true,
       "uiComponent": "sensor",
-      "icon": "/assets/icon.svg"
+      "icon": "/assets/wind.svg"
     },
     "measure_wind_gust_max": {
       "type": "number",
@@ -130,16 +130,16 @@
       "uiComponent": "sensor",
       "icon": "/assets/wind.svg"
     },
-    "alarm_mirror_water": {
+    "alarm_pump_foil": {
       "type": "boolean",
       "title": {
-        "en": "Mirror Water (Foil)",
-        "fr": "Lac d'huile (Foil)"
+        "en": "Pump Foil Conditions",
+        "fr": "Conditions Pump Foil"
       },
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/water_level.svg"
+      "icon": "/assets/foil.svg"
     }
   },
   "drivers": [
@@ -160,7 +160,7 @@
         "measure_wind_direction",
         "measure_wind_direction_text",
         "alarm_strong_wind",
-        "alarm_mirror_water"
+        "alarm_pump_foil"
       ],
       "images": {
         "small": "/assets/icon.svg",

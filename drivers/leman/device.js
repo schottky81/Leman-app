@@ -63,6 +63,7 @@ class LemanDevice extends Homey.Device {
 
         // Calculate difference in cm relative to summer average (372.23m)
         const diffCm = Math.round((currentHeight - this.summerAvgHeight) * 100);
+        this.lastDiffCm = diffCm;
         await this.setCapabilityValue('measure_water_level_diff', diffCm);
       }
 
@@ -103,7 +104,7 @@ class LemanDevice extends Homey.Device {
       let maxGustToday = 0;
       let isKitePossible = false;
       let isStrongWind = false;
-      let isMirrorWater = true; // Assume mirror water unless wind is found > 5kn
+      let isPumpFoil = false;
       
       // Current or upcoming wind direction
       let currentWindDir = 0;
@@ -128,10 +129,6 @@ class LemanDevice extends Homey.Device {
 
           if (windSpeed > maxWindToday) maxWindToday = windSpeed;
           if (gustSpeed > maxGustToday) maxGustToday = gustSpeed;
-          
-          if (windSpeed > 5) {
-            isMirrorWater = false;
-          }
         }
       }
 
@@ -140,6 +137,11 @@ class LemanDevice extends Homey.Device {
       // Thresholds
       if (maxWindToday >= 12) isKitePossible = true;
       if (maxGustToday >= 25) isStrongWind = true;
+      
+      // Pump Foil: max wind <= 5kn AND water level diff < -36cm
+      if (maxWindToday <= 5 && this.lastDiffCm < -36) {
+        isPumpFoil = true;
+      }
 
       // Wind direction text logic
       let windDirText = 'Variable';
@@ -152,7 +154,7 @@ class LemanDevice extends Homey.Device {
       else if (currentWindDir >= 292.5 && currentWindDir < 337.5) windDirText = 'Joran (NW)';
       else if (currentWindDir >= 337.5 || currentWindDir < 22.5) windDirText = 'Nord';
 
-      this.log(`Max wind: ${maxWindToday} kn, Max gust: ${maxGustToday} kn, Dir: ${currentWindDir}° (${windDirText})`);
+      this.log(`Max wind: ${maxWindToday} kn, Max gust: ${maxGustToday} kn, Dir: ${currentWindDir}° (${windDirText}), Pump Foil: ${isPumpFoil}`);
       
       await this.setCapabilityValue('measure_wind_max', maxWindToday);
       await this.setCapabilityValue('measure_wind_gust_max', maxGustToday);
@@ -160,7 +162,7 @@ class LemanDevice extends Homey.Device {
       await this.setCapabilityValue('measure_wind_direction_text', windDirText);
       await this.setCapabilityValue('alarm_kite', isKitePossible);
       await this.setCapabilityValue('alarm_strong_wind', isStrongWind);
-      await this.setCapabilityValue('alarm_mirror_water', isMirrorWater);
+      await this.setCapabilityValue('alarm_pump_foil', isPumpFoil);
 
     } catch (err) {
       this.error('Error polling wind forecast:', err.message);

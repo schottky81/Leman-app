@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Water Line -->
+  <path fill="none" stroke="#BBDEFB" stroke-width="12" stroke-linecap="round" d="M50 360 Q 150 350, 250 360 T 460 360" />
+
+  <!-- Dynamic Pump Foil Silhouette -->
+  <g fill="#1565C0">
+    <!-- Board: Horizontal, parallel to the wing -->
+    <rect x="150" y="270" width="220" height="15" rx="7.5" />
+    
+    <!-- Mast: Crossing the water line -->
+    <rect x="230" y="285" width="8" height="130" />
+    
+    <!-- Foil: Submerged and horizontal -->
+    <g transform="translate(0 20)">
+      <path d="M180 395 L310 395" stroke="#1565C0" stroke-width="8" stroke-linecap="round" />
+      <path d="M180 395 Q 220 385, 260 395 Q 220 405, 180 395 Z" /> <!-- Front Wing -->
+    </g>
+    
+    <!-- Rider in Pumping Stance -->
+    <g transform="translate(180 110)">
+      <!-- Head -->
+      <circle cx="90" cy="15" r="18" />
+      
+      <!-- Torso & Legs (Deep compression) -->
+      <path d="M90 33 L 65 95 L 110 165" stroke="#1565C0" stroke-width="20" stroke-linecap="round" fill="none" />
+      <path d="M65 95 L 35 165" stroke="#1565C0" stroke-width="20" stroke-linecap="round" fill="none" />
+      
+      <!-- Arms: Curved downwards (Inverse of previous) -->
+      <path d="M85 50 Q 115 80, 145 60" stroke="#1565C0" stroke-width="14" stroke-linecap="round" fill="none" />
+    </g>
+  </g>
+</svg>
