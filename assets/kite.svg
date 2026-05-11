@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Kite Wing (Modern profile) -->
+  <path fill="#1565C0" d="M320 60 C 420 20, 500 100, 460 200 C 480 120, 420 60, 350 80 Z" />
+  
+  <!-- Lines (Thin and sharp) -->
+  <path stroke="#1565C0" stroke-width="3" fill="none" d="M335 75 L 150 400 M 465 190 L 160 410" />
+  
+  <!-- Rider & Board (Dynamic leaning pose) -->
+  <g transform="translate(100 380) rotate(-25)">
+    <!-- Head -->
+    <circle fill="#1565C0" cx="40" cy="-10" r="18" />
+    <!-- Body & Legs -->
+    <path fill="#1565C0" d="M35 10 Q 55 40, 30 90 L 15 85 Q 40 40, 25 15 Z" />
+    <!-- Board -->
+    <rect fill="#1565C0" x="-10" y="90" width="100" height="15" rx="7" />
+  </g>
+</svg>

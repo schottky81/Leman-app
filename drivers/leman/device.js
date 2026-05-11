@@ -85,7 +85,8 @@ class LemanDevice extends Homey.Device {
       this.log('Polling wind forecast from Open-Meteo (Morges)...');
 
       // Coordinates for Morges: 46.51, 6.50
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=46.51&longitude=6.50&hourly=wind_speed_10m&wind_speed_unit=kn&timezone=Europe%2FBerlin&models=icon_seamless&forecast_days=1';
+      // Requesting wind speed, gusts and direction
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=46.51&longitude=6.50&hourly=wind_speed_10m,wind_gusts_10m,wind_direction_10m&wind_speed_unit=kn&timezone=Europe%2FBerlin&models=icon_seamless&forecast_days=1';
       
       const response = await fetch(url);
       if (!response.ok) {
@@ -99,30 +100,67 @@ class LemanDevice extends Homey.Device {
 
       const hourly = data.hourly;
       let maxWindToday = 0;
+      let maxGustToday = 0;
       let isKitePossible = false;
+      let isStrongWind = false;
+      let isMirrorWater = true; // Assume mirror water unless wind is found > 5kn
+      
+      // Current or upcoming wind direction
+      let currentWindDir = 0;
+      const now = new Date();
+      let closestHourIndex = 0;
+      let minTimeDiff = Infinity;
 
       // Filter for daytime: 08:00 to 20:00
       for (let i = 0; i < hourly.time.length; i++) {
         const time = new Date(hourly.time[i]);
         const hour = time.getHours();
+        
+        const timeDiff = Math.abs(time - now);
+        if (timeDiff < minTimeDiff) {
+          minTimeDiff = timeDiff;
+          closestHourIndex = i;
+        }
 
         if (hour >= 8 && hour <= 20) {
           const windSpeed = hourly.wind_speed_10m[i];
-          if (windSpeed > maxWindToday) {
-            maxWindToday = windSpeed;
+          const gustSpeed = hourly.wind_gusts_10m[i];
+
+          if (windSpeed > maxWindToday) maxWindToday = windSpeed;
+          if (gustSpeed > maxGustToday) maxGustToday = gustSpeed;
+          
+          if (windSpeed > 5) {
+            isMirrorWater = false;
           }
         }
       }
 
-      // Threshold: 12 knots for "constant wind"
-      if (maxWindToday >= 12) {
-        isKitePossible = true;
-      }
+      currentWindDir = hourly.wind_direction_10m[closestHourIndex];
 
-      this.log(`Max wind forecast (08h-20h): ${maxWindToday} kn. Kite possible: ${isKitePossible}`);
+      // Thresholds
+      if (maxWindToday >= 12) isKitePossible = true;
+      if (maxGustToday >= 25) isStrongWind = true;
+
+      // Wind direction text logic
+      let windDirText = 'Variable';
+      if (currentWindDir >= 22.5 && currentWindDir < 67.5) windDirText = 'Bise (NE)';
+      else if (currentWindDir >= 67.5 && currentWindDir < 112.5) windDirText = 'Est';
+      else if (currentWindDir >= 112.5 && currentWindDir < 157.5) windDirText = 'Sud-Est';
+      else if (currentWindDir >= 157.5 && currentWindDir < 202.5) windDirText = 'Vent (S)';
+      else if (currentWindDir >= 202.5 && currentWindDir < 247.5) windDirText = 'Sud-Ouest';
+      else if (currentWindDir >= 247.5 && currentWindDir < 292.5) windDirText = 'Vent (W)';
+      else if (currentWindDir >= 292.5 && currentWindDir < 337.5) windDirText = 'Joran (NW)';
+      else if (currentWindDir >= 337.5 || currentWindDir < 22.5) windDirText = 'Nord';
+
+      this.log(`Max wind: ${maxWindToday} kn, Max gust: ${maxGustToday} kn, Dir: ${currentWindDir}° (${windDirText})`);
       
       await this.setCapabilityValue('measure_wind_max', maxWindToday);
+      await this.setCapabilityValue('measure_wind_gust_max', maxGustToday);
+      await this.setCapabilityValue('measure_wind_direction', currentWindDir);
+      await this.setCapabilityValue('measure_wind_direction_text', windDirText);
       await this.setCapabilityValue('alarm_kite', isKitePossible);
+      await this.setCapabilityValue('alarm_strong_wind', isStrongWind);
+      await this.setCapabilityValue('alarm_mirror_water', isMirrorWater);
 
     } catch (err) {
       this.error('Error polling wind forecast:', err.message);

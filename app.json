@@ -40,7 +40,7 @@
       "setable": false,
       "insights": true,
       "uiComponent": "sensor",
-      "icon": "/assets/water_level.svg"
+      "icon": "/assets/water_height.svg"
     },
     "measure_water_level_diff": {
       "type": "number",
@@ -54,7 +54,7 @@
       "setable": false,
       "insights": true,
       "uiComponent": "sensor",
-      "icon": "/assets/water_level.svg"
+      "icon": "/assets/water_height.svg"
     },
     "alarm_kite": {
       "type": "boolean",
@@ -65,7 +65,7 @@
       "getable": true,
       "setable": false,
       "uiComponent": "sensor",
-      "icon": "/assets/icon.svg"
+      "icon": "/assets/kite.svg"
     },
     "measure_wind_max": {
       "type": "number",
@@ -80,6 +80,66 @@
       "insights": true,
       "uiComponent": "sensor",
       "icon": "/assets/icon.svg"
+    },
+    "measure_wind_gust_max": {
+      "type": "number",
+      "title": {
+        "en": "Max Gust Forecast",
+        "fr": "Rafale Max Prévue"
+      },
+      "units": "kn",
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/wind.svg"
+    },
+    "measure_wind_direction": {
+      "type": "number",
+      "title": {
+        "en": "Wind Direction",
+        "fr": "Direction du Vent"
+      },
+      "units": "°",
+      "decimals": 0,
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/compass.svg"
+    },
+    "measure_wind_direction_text": {
+      "type": "string",
+      "title": {
+        "en": "Wind Name",
+        "fr": "Nom du Vent"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/compass.svg"
+    },
+    "alarm_strong_wind": {
+      "type": "boolean",
+      "title": {
+        "en": "Strong Wind Alarm",
+        "fr": "Alerte Vent Fort"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/wind.svg"
+    },
+    "alarm_mirror_water": {
+      "type": "boolean",
+      "title": {
+        "en": "Mirror Water (Foil)",
+        "fr": "Lac d'huile (Foil)"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/water_level.svg"
     }
   },
   "drivers": [
@@ -95,7 +155,12 @@
         "measure_water_level",
         "measure_water_level_diff",
         "alarm_kite",
-        "measure_wind_max"
+        "measure_wind_max",
+        "measure_wind_gust_max",
+        "measure_wind_direction",
+        "measure_wind_direction_text",
+        "alarm_strong_wind",
+        "alarm_mirror_water"
       ],
       "images": {
         "small": "/assets/icon.svg",
