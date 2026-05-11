@@ -32,6 +32,7 @@ This project requires the [Homey CLI](https://npm.im/homey).
 ## Implementation Details
 - **Capability**: `measure_water_level` (Custom, meters).
 - **Capability**: `measure_temperature` (Standard, °C).
-- **Capability**: `alarm_kite` (Custom, Boolean). Indicates if wind forecast is > 12 knots during daytime (08:00 - 20:00).
+- **Capability**: `kite_conditions` (Custom, Boolean). Indicates if wind forecast is > 12 knots during daytime (08:00 - 20:00).
+- **Capability**: `pump_foil_conditions` (Custom, Boolean). Indicates if wind/water conditions are suitable for pump foil.
 - **Capability**: `measure_wind_max` (Custom, knots). Max forecasted average wind speed for the day.
 - **Device**: A single "Lac Léman" sensor device.

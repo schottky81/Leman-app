@@ -160,9 +160,22 @@ class LemanDevice extends Homey.Device {
       await this.setCapabilityValue('measure_wind_gust_max', maxGustToday);
       await this.setCapabilityValue('measure_wind_direction', currentWindDir);
       await this.setCapabilityValue('measure_wind_direction_text', windDirText);
-      await this.setCapabilityValue('alarm_kite', isKitePossible);
+      // Update icons first, then value (sometimes helps UI refresh)
+      if (this.hasCapability('kite_conditions')) {
+        await this.setCapabilityOptions('kite_conditions', { 
+          icon: isKitePossible ? 'assets/kite_ok.svg' : 'assets/kite.svg' 
+        }).catch(err => this.error('Icon err:', err));
+      }
+      await this.setCapabilityValue('kite_conditions', isKitePossible);
+
       await this.setCapabilityValue('alarm_strong_wind', isStrongWind);
-      await this.setCapabilityValue('alarm_pump_foil', isPumpFoil);
+
+      if (this.hasCapability('pump_foil_conditions')) {
+        await this.setCapabilityOptions('pump_foil_conditions', { 
+          icon: isPumpFoil ? 'assets/foil_ok.svg' : 'assets/foil.svg' 
+        }).catch(err => this.error('Icon err:', err));
+      }
+      await this.setCapabilityValue('pump_foil_conditions', isPumpFoil);
 
     } catch (err) {
       this.error('Error polling wind forecast:', err.message);

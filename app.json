@@ -56,7 +56,7 @@
       "uiComponent": "sensor",
       "icon": "/assets/water_height.svg"
     },
-    "alarm_kite": {
+    "kite_conditions": {
       "type": "boolean",
       "title": {
         "en": "Kite Conditions",
@@ -130,7 +130,7 @@
       "uiComponent": "sensor",
       "icon": "/assets/wind.svg"
     },
-    "alarm_pump_foil": {
+    "pump_foil_conditions": {
       "type": "boolean",
       "title": {
         "en": "Pump Foil Conditions",
@@ -151,8 +151,8 @@
       },
       "class": "sensor",
       "capabilities": [
-        "alarm_pump_foil",
-        "alarm_kite",
+        "pump_foil_conditions",
+        "kite_conditions",
         "alarm_strong_wind",
         "measure_temperature",
         "measure_water_level",
