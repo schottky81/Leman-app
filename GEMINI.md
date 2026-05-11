@@ -6,12 +6,14 @@
 ### Key Technologies
 - **Homey SDK 3**: Foundation for the app.
 - **Node.js 18+**: Runtime.
-- **API**: [existenz.ch API](https://api.existenz.ch/) (Unofficial REST wrapper for BAFU/FOEN data).
+- **Hydro API**: [existenz.ch API](https://api.existenz.ch/) (Unofficial REST wrapper for BAFU/FOEN data).
+- **Meteo API**: [Open-Meteo](https://open-meteo.com/) (Using MeteoSwiss ICON model).
 
 ### Data Sources
-The app aggregates data from two specific BAFU stations on Lac Léman:
-- **Water Level**: Station 2027 (Saint-Prex)
-- **Water Temperature**: Station 2030 (Morges)
+The app aggregates data from several sources:
+- **Water Level**: Station 2027 (Saint-Prex) via existenz.ch.
+- **Water Temperature**: Station 2030 (Morges) via existenz.ch.
+- **Wind Forecast**: Open-Meteo (ICON-Seamless model) for coordinates 46.51, 6.50 (Morges).
 
 ## Building and Running
 This project requires the [Homey CLI](https://npm.im/homey).
@@ -24,10 +26,12 @@ This project requires the [Homey CLI](https://npm.im/homey).
 
 ## Development Conventions
 - **Modular Config**: Uses the `.homeycompose` pattern for capabilities and drivers.
-- **Polling**: Data is refreshed every 15 minutes to respect the API and reflect the typical BAFU update frequency (10-30 mins).
+- **Polling**: Data is refreshed every 15 minutes.
 - **Localization**: Supports English (`en`) and French (`fr`).
 
 ## Implementation Details
 - **Capability**: `measure_water_level` (Custom, meters).
 - **Capability**: `measure_temperature` (Standard, °C).
+- **Capability**: `alarm_kite` (Custom, Boolean). Indicates if wind forecast is > 12 knots during daytime (08:00 - 20:00).
+- **Capability**: `measure_wind_max` (Custom, knots). Max forecasted average wind speed for the day.
 - **Device**: A single "Lac Léman" sensor device.

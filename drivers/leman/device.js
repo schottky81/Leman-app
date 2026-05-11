@@ -32,11 +32,19 @@ class LemanDevice extends Homey.Device {
   }
 
   /**
-   * pollData fetches the latest data from the existenz.ch API.
+   * pollData fetches the latest data from the existenz.ch API and wind forecasts from Open-Meteo.
    */
   async pollData() {
+    await this.pollHydroData();
+    await this.pollWindForecast();
+  }
+
+  /**
+   * pollHydroData fetches the latest hydrological data.
+   */
+  async pollHydroData() {
     try {
-      this.log('Polling data from existenz.ch...');
+      this.log('Polling hydrological data from existenz.ch...');
       
       const response = await fetch('https://api.existenz.ch/apiv1/hydro/latest');
       if (!response.ok) {
@@ -54,25 +62,70 @@ class LemanDevice extends Homey.Device {
         await this.setCapabilityValue('measure_water_level', currentHeight);
 
         // Calculate difference in cm relative to summer average (372.23m)
-        // Diff = (Current - Reference) * 100
         const diffCm = Math.round((currentHeight - this.summerAvgHeight) * 100);
-        this.log(`Updating water level difference: ${diffCm} cm (vs summer avg ${this.summerAvgHeight}m)`);
         await this.setCapabilityValue('measure_water_level_diff', diffCm);
-      } else {
-        this.error('Could not find water level data for station 2027');
       }
 
       // Filter for Station 2030 (Morges) - Temperature
       const tempData = payload.find(item => item.loc === '2030' && item.par === 'temperature');
       if (tempData) {
-        this.log(`Updating temperature: ${tempData.val} °C`);
         await this.setCapabilityValue('measure_temperature', tempData.val);
-      } else {
-        this.error('Could not find temperature data for station 2030');
       }
 
     } catch (err) {
-      this.error('Error polling data:', err.message);
+      this.error('Error polling hydro data:', err.message);
+    }
+  }
+
+  /**
+   * pollWindForecast fetches wind forecasts from Open-Meteo (ICON model).
+   */
+  async pollWindForecast() {
+    try {
+      this.log('Polling wind forecast from Open-Meteo (Morges)...');
+
+      // Coordinates for Morges: 46.51, 6.50
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=46.51&longitude=6.50&hourly=wind_speed_10m&wind_speed_unit=kn&timezone=Europe%2FBerlin&models=icon_seamless&forecast_days=1';
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data.hourly || !data.hourly.wind_speed_10m) {
+        throw new Error('Invalid forecast data received');
+      }
+
+      const hourly = data.hourly;
+      let maxWindToday = 0;
+      let isKitePossible = false;
+
+      // Filter for daytime: 08:00 to 20:00
+      for (let i = 0; i < hourly.time.length; i++) {
+        const time = new Date(hourly.time[i]);
+        const hour = time.getHours();
+
+        if (hour >= 8 && hour <= 20) {
+          const windSpeed = hourly.wind_speed_10m[i];
+          if (windSpeed > maxWindToday) {
+            maxWindToday = windSpeed;
+          }
+        }
+      }
+
+      // Threshold: 12 knots for "constant wind"
+      if (maxWindToday >= 12) {
+        isKitePossible = true;
+      }
+
+      this.log(`Max wind forecast (08h-20h): ${maxWindToday} kn. Kite possible: ${isKitePossible}`);
+      
+      await this.setCapabilityValue('measure_wind_max', maxWindToday);
+      await this.setCapabilityValue('alarm_kite', isKitePossible);
+
+    } catch (err) {
+      this.error('Error polling wind forecast:', err.message);
     }
   }
 

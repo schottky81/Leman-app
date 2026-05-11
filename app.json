@@ -55,6 +55,31 @@
       "insights": true,
       "uiComponent": "sensor",
       "icon": "/assets/water_level.svg"
+    },
+    "alarm_kite": {
+      "type": "boolean",
+      "title": {
+        "en": "Kite Conditions",
+        "fr": "Conditions Kite"
+      },
+      "getable": true,
+      "setable": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
+    },
+    "measure_wind_max": {
+      "type": "number",
+      "title": {
+        "en": "Max Wind Forecast",
+        "fr": "Vent Max Prévu"
+      },
+      "units": "kn",
+      "decimals": 1,
+      "getable": true,
+      "setable": false,
+      "insights": true,
+      "uiComponent": "sensor",
+      "icon": "/assets/icon.svg"
     }
   },
   "drivers": [
@@ -68,7 +93,9 @@
       "capabilities": [
         "measure_temperature",
         "measure_water_level",
-        "measure_water_level_diff"
+        "measure_water_level_diff",
+        "alarm_kite",
+        "measure_wind_max"
       ],
       "images": {
         "small": "/assets/icon.svg",
