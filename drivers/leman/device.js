@@ -108,21 +108,33 @@ class LemanDevice extends Homey.Device {
       
       // Current or upcoming wind direction
       let currentWindDir = 0;
+      
+      // Homey might be in UTC. We need to find the forecast for the current LOCAL time.
+      // Open-Meteo is requested with Europe/Berlin timezone.
       const now = new Date();
+      // Use the local time string from Homey to get the actual local hour
+      // Or simply adjust for the known offset if we want to be surgical
+      // However, a better way is to compare UTC timestamps or use the local hour
+      
+      this.log(`Homey UTC Time: ${now.toISOString()}`);
+      
       let closestHourIndex = 0;
       let minTimeDiff = Infinity;
 
       // Filter for daytime: 08:00 to 20:00
       for (let i = 0; i < hourly.time.length; i++) {
-        const time = new Date(hourly.time[i]);
-        const hour = time.getHours();
+        // The API returns times like "2026-05-12T13:00". 
+        // Since we requested Europe/Berlin timezone, this is 13:00 LOCAL time.
+        // We need to compare this with the current LOCAL time.
+        const forecastTime = new Date(hourly.time[i] + ':00+02:00'); // Explicitly treat as CEST (+02:00) for comparison
         
-        const timeDiff = Math.abs(time - now);
+        const timeDiff = Math.abs(forecastTime - now);
         if (timeDiff < minTimeDiff) {
           minTimeDiff = timeDiff;
           closestHourIndex = i;
         }
 
+        const hour = forecastTime.getHours();
         if (hour >= 8 && hour <= 20) {
           const windSpeed = hourly.wind_speed_10m[i];
           const gustSpeed = hourly.wind_gusts_10m[i];
@@ -133,15 +145,33 @@ class LemanDevice extends Homey.Device {
       }
 
       currentWindDir = hourly.wind_direction_10m[closestHourIndex];
+      const currentWindSpeed = hourly.wind_speed_10m[closestHourIndex];
+      
+      this.log(`Selected forecast time: ${hourly.time[closestHourIndex]} (Index: ${closestHourIndex})`);
+      this.log(`Current forecasted wind: ${currentWindSpeed} kn`);
+
+      // Near future wind (max of current hour and next hour if available)
+      let nearFutureWind = currentWindSpeed;
+      if (closestHourIndex + 1 < hourly.wind_speed_10m.length) {
+        nearFutureWind = Math.max(currentWindSpeed, hourly.wind_speed_10m[closestHourIndex + 1]);
+        this.log(`Next hour forecasted wind: ${hourly.wind_speed_10m[closestHourIndex + 1]} kn`);
+      }
+      this.log(`Resulting nearFutureWind (max): ${nearFutureWind} kn`);
+      this.log(`Water Level Diff: ${this.lastDiffCm} cm`);
 
       // Thresholds
-      if (maxWindToday >= 12) isKitePossible = true;
+      // Kite: OK if current/near-future wind >= 12kn OR if it's generally windy today (maxWindToday >= 12)
+      // We'll keep maxWindToday as a fallback to show "it's a kite day" even if there's a lull
+      if (nearFutureWind >= 12 || maxWindToday >= 12) isKitePossible = true;
+      
       if (maxGustToday >= 25) isStrongWind = true;
       
-      // Pump Foil: max wind <= 5kn AND water level diff < -36cm
-      if (maxWindToday <= 5 && this.lastDiffCm < -36) {
+      // Pump Foil: near future wind <= 8kn AND water level diff > -36cm
+      // Using nearFutureWind (max of now and next hour) ensures we don't start a session just before wind picks up
+      if (nearFutureWind <= 8 && this.lastDiffCm > -36) {
         isPumpFoil = true;
       }
+      this.log(`Pump Foil condition result: ${isPumpFoil}`);
 
       // Wind direction text logic
       let windDirText = 'Variable';
