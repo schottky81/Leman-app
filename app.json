@@ -162,10 +162,6 @@
         "measure_wind_direction",
         "measure_wind_direction_text"
       ],
-      "images": {
-        "small": "/assets/icon.svg",
-        "large": "/assets/icon.svg"
-      },
       "pair": [
         {
           "id": "list_devices",
@@ -178,7 +174,337 @@
           "id": "add_devices",
           "template": "add_devices"
         }
+      ],
+      "settings": [
+        {
+          "id": "station_water_level",
+          "type": "text",
+          "label": {
+            "en": "Water Level Station ID",
+            "fr": "ID Station Niveau d'eau"
+          },
+          "value": "2027",
+          "hint": {
+            "en": "Station ID for water level (OFEV/BAFU, e.g. 2027)",
+            "fr": "ID de la station pour le niveau d'eau (OFEV/BAFU, ex: 2027)"
+          }
+        },
+        {
+          "id": "station_water_temp",
+          "type": "text",
+          "label": {
+            "en": "Water Temperature Station ID",
+            "fr": "ID Station Température"
+          },
+          "value": "2030",
+          "hint": {
+            "en": "Station ID for water temperature (OFEV/BAFU, e.g. 2030)",
+            "fr": "ID de la station pour la température de l'eau (OFEV/BAFU, ex: 2030)"
+          }
+        },
+        {
+          "id": "gps_lat",
+          "type": "number",
+          "label": {
+            "en": "Wind Forecast Latitude",
+            "fr": "Latitude pour prévisions vent"
+          },
+          "value": 46.51,
+          "decimals": 4,
+          "hint": {
+            "en": "Latitude for Open-Meteo wind forecast",
+            "fr": "Latitude pour les prévisions météo Open-Meteo"
+          }
+        },
+        {
+          "id": "gps_lon",
+          "type": "number",
+          "label": {
+            "en": "Wind Forecast Longitude",
+            "fr": "Longitude pour prévisions vent"
+          },
+          "value": 6.50,
+          "decimals": 4,
+          "hint": {
+            "en": "Longitude for Open-Meteo wind forecast",
+            "fr": "Longitude pour les prévisions météo Open-Meteo"
+          }
+        },
+        {
+          "id": "kite_wind_min",
+          "type": "number",
+          "label": {
+            "en": "Kite Minimum Wind (knots)",
+            "fr": "Vent minimum pour le Kite (nœuds)"
+          },
+          "value": 12,
+          "decimals": 0,
+          "hint": {
+            "en": "Minimum wind speed threshold to trigger kite conditions",
+            "fr": "Seuil de vent moyen minimum pour les conditions de kite"
+          }
+        },
+        {
+          "id": "pump_foil_wind_max",
+          "type": "number",
+          "label": {
+            "en": "Pump Foil Maximum Wind (knots)",
+            "fr": "Vent maximum pour le Pump Foil (nœuds)"
+          },
+          "value": 8,
+          "decimals": 0,
+          "hint": {
+            "en": "Maximum wind speed threshold to trigger pump foil conditions",
+            "fr": "Seuil de vent maximum pour les conditions de pump foil"
+          }
+        },
+        {
+          "id": "pump_foil_wind_max_bise",
+          "type": "number",
+          "label": {
+            "en": "Pump Foil Max Wind during Bise (knots)",
+            "fr": "Vent max Pump Foil sous la Bise (nœuds)"
+          },
+          "value": 12,
+          "decimals": 0,
+          "hint": {
+            "en": "Maximum wind speed threshold for pump foil when wind is North-East (Bise)",
+            "fr": "Seuil de vent maximum sous la Bise (Nord-Est) pour le pump foil"
+          }
+        },
+        {
+          "id": "pump_foil_level_min",
+          "type": "number",
+          "label": {
+            "en": "Pump Foil Min Level Diff (cm)",
+            "fr": "Niveau d'eau min Pump Foil (cm)"
+          },
+          "value": -36,
+          "decimals": 0,
+          "hint": {
+            "en": "Minimum water level difference vs summer average in cm (e.g. -36)",
+            "fr": "Écart de niveau minimum vs moyenne d'été en cm (ex: -36)"
+          }
+        },
+        {
+          "id": "strong_wind_min",
+          "type": "number",
+          "label": {
+            "en": "Strong Wind Alarm Wind (knots)",
+            "fr": "Vent pour l'alarme vent fort (nœuds)"
+          },
+          "value": 25,
+          "decimals": 0,
+          "hint": {
+            "en": "Wind gusts threshold to trigger strong wind alarm",
+            "fr": "Seuil de rafales de vent pour l'alarme de vent fort"
+          }
+        },
+        {
+          "id": "polling_interval",
+          "type": "number",
+          "label": {
+            "en": "Polling Interval (minutes)",
+            "fr": "Intervalle de rafraîchissement (minutes)"
+          },
+          "value": 15,
+          "min": 5,
+          "max": 60,
+          "decimals": 0,
+          "hint": {
+            "en": "How often to poll data from APIs (5 to 60 minutes)",
+            "fr": "Fréquence d'interrogation des API (de 5 à 60 minutes)"
+          }
+        }
       ]
     }
-  ]
+  ],
+  "flow": {
+    "triggers": [
+      {
+        "id": "kite_conditions_changed",
+        "title": {
+          "en": "Kite conditions changed",
+          "fr": "Les conditions de Kite ont changé"
+        },
+        "description": {
+          "en": "Triggered when kite conditions become active or inactive",
+          "fr": "Déclenché lorsque les conditions de Kite deviennent actives ou inactives"
+        },
+        "tokens": [
+          {
+            "name": "active",
+            "type": "boolean",
+            "title": {
+              "en": "Active",
+              "fr": "Actif"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "pump_foil_conditions_changed",
+        "title": {
+          "en": "Pump foil conditions changed",
+          "fr": "Les conditions de Pump Foil ont changé"
+        },
+        "description": {
+          "en": "Triggered when pump foil conditions become active or inactive",
+          "fr": "Déclenché lorsque les conditions de Pump Foil deviennent actives ou inactives"
+        },
+        "tokens": [
+          {
+            "name": "active",
+            "type": "boolean",
+            "title": {
+              "en": "Active",
+              "fr": "Actif"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "alarm_strong_wind_changed",
+        "title": {
+          "en": "Strong wind alarm changed",
+          "fr": "L'alarme de vent fort a changé"
+        },
+        "description": {
+          "en": "Triggered when the strong wind alarm changes status",
+          "fr": "Déclenché lorsque l'état de l'alarme de vent fort change"
+        },
+        "tokens": [
+          {
+            "name": "active",
+            "type": "boolean",
+            "title": {
+              "en": "Active",
+              "fr": "Actif"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "water_level_changed",
+        "title": {
+          "en": "Water level changed",
+          "fr": "Le niveau d'eau a changé"
+        },
+        "description": {
+          "en": "Triggered when the water level changes",
+          "fr": "Déclenché lorsque le niveau d'eau change"
+        },
+        "tokens": [
+          {
+            "name": "level",
+            "type": "number",
+            "title": {
+              "en": "Water Level (m)",
+              "fr": "Niveau d'eau (m)"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "water_level_diff_changed",
+        "title": {
+          "en": "Water level diff changed",
+          "fr": "L'écart de niveau d'eau a changé"
+        },
+        "description": {
+          "en": "Triggered when the water level difference vs summer average changes",
+          "fr": "Déclenché lorsque l'écart de niveau par rapport à la moyenne d'été change"
+        },
+        "tokens": [
+          {
+            "name": "diff",
+            "type": "number",
+            "title": {
+              "en": "Difference (cm)",
+              "fr": "Écart (cm)"
+            }
+          }
+        ],
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "kite_conditions_active",
+        "title": {
+          "en": "Kite conditions are active",
+          "fr": "Les conditions de Kite sont réunies"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "pump_foil_conditions_active",
+        "title": {
+          "en": "Pump foil conditions are active",
+          "fr": "Les conditions de Pump Foil sont réunies"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      },
+      {
+        "id": "alarm_strong_wind_active",
+        "title": {
+          "en": "Strong wind alarm is active",
+          "fr": "L'alerte de vent fort est active"
+        },
+        "args": [
+          {
+            "name": "device",
+            "type": "device",
+            "filter": "driver_id=leman"
+          }
+        ]
+      }
+    ]
+  }
 }

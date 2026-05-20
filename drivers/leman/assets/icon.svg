@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <title>Lac Léman</title>
+  <!-- 
+    Silhouette du Lac Léman (croissant) centrée.
+    Tracé optimisé pour une icône d'application.
+  -->
+  <path fill="#1565C0" d="M 5,42 C 10,35 25,15 55,12 C 75,10 95,15 98,35 C 95,45 80,48 65,42 C 50,38 30,35 15,45 C 10,48 5,45 5,42 Z" transform="translate(256, 256) scale(4.8) translate(-51.5, -29)" />
+</svg>
